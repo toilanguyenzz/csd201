@@ -1,0 +1,370 @@
+==============================================================================
+    CAC KICH BAN CODE THEM CHUC NANG KHI REVIEW - LAB211
+    Software Developer Management
+==============================================================================
+
+
+==============================
+KICH BAN 1: Tim Developer theo TEN
+==============================
+>> Yeu cau: Them chuc nang tim developer theo ten (tim ganh).
+
+    private void searchDeveloperByName() {
+        view.displayMessage("\n--- Search Developer by Name ---");
+        System.out.print("Enter name to search: ");
+        String keyword = Validation.checkInputString();
+
+        List<Developer> found = new ArrayList<>();
+        for (Developer d : developers) {
+            if (d.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                found.add(d);
+            }
+        }
+
+        if (found.isEmpty()) {
+            view.displayError("No developer found with name: " + keyword);
+        } else {
+            view.displayDeveloperList(found);
+        }
+    }
+
+
+==============================
+KICH BAN 2: Update toan bo thong tin Developer
+==============================
+>> Yeu cau: Sua ten, skills, salary cua developer (Enter de bo qua).
+
+    private void updateDeveloperInfo() {
+        view.displayMessage("\n--- Update Developer Info ---");
+        String id = view.getDeveloperIdSearchInput();
+        Developer dev = findDeveloperById(id);
+
+        if (dev == null) {
+            view.displayError("Developer ID does not exist!");
+            return;
+        }
+
+        view.displayDeveloper(dev);
+
+        System.out.print("Enter new Name (press Enter to skip): ");
+        String newName = Validation.checkInputScanner();
+        if (!newName.isEmpty()) {
+            dev.setName(newName);
+        }
+
+        System.out.print("Enter new Skills (press Enter to skip): ");
+        String newSkills = Validation.checkInputScanner();
+        if (!newSkills.isEmpty()) {
+            List<String> skills = new ArrayList<>();
+            for (String s : newSkills.split(",")) {
+                skills.add(s.trim());
+            }
+            dev.setSkills(skills);
+        }
+
+        System.out.print("Enter new Salary (press Enter to skip): ");
+        String salaryStr = Validation.checkInputScanner();
+        if (!salaryStr.isEmpty()) {
+            int newSalary = Integer.parseInt(salaryStr);
+            if (newSalary >= 1000) {
+                dev.setSalary(newSalary);
+            }
+        }
+
+        hasUnsavedChanges = true;
+        view.displayMessage("Developer updated successfully!");
+    }
+
+
+==============================
+KICH BAN 3: Dem so luong Developer
+==============================
+>> Yeu cau: Hien thi tong so developer trong he thong.
+
+    private void countDevelopers() {
+        view.displayMessage("Total developers: " + developers.size());
+    }
+
+
+==============================
+KICH BAN 4: Tim Developer co luong cao nhat / thap nhat
+==============================
+>> Yeu cau: Hien thi developer co luong max hoac min.
+
+    private void findHighestSalaryDeveloper() {
+        if (developers.isEmpty()) {
+            view.displayError("No developers found!");
+            return;
+        }
+
+        Developer maxDev = developers.get(0);
+        for (Developer d : developers) {
+            if (d.getSalary() > maxDev.getSalary()) {
+                maxDev = d;
+            }
+        }
+
+        view.displayMessage("\n--- Developer with Highest Salary ---");
+        view.displayDeveloper(maxDev);
+    }
+
+    // Tuong tu cho thap nhat, chi thay > thanh <
+
+
+==============================
+KICH BAN 5: Sort Developer theo Ten A-Z
+==============================
+>> Yeu cau: Sap xep danh sach developer theo ten.
+
+    private void sortDevelopersByName() {
+        List<Developer> sorted = new ArrayList<>(developers);
+        Collections.sort(sorted, Comparator.comparing(Developer::getName));
+        view.displayDeveloperList(sorted);
+    }
+
+
+==============================
+KICH BAN 6: Tu dong tinh ngay ket thuc cua Project
+==============================
+>> Yeu cau: Nhap startDate + duration -> tu dong in ra endDate.
+
+Buoc 1: Them method tinh endDate:
+
+    // Can import: java.text.SimpleDateFormat, java.util.Calendar, java.util.Date
+
+    private String calculateEndDate(String startDate, int durationMonths) {
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            df.setLenient(false);
+            Date date = df.parse(startDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.MONTH, durationMonths);
+            return df.format(cal.getTime());
+        } catch (Exception e) {
+            return "N/A";
+        }
+    }
+
+Buoc 2: Them vao cuoi ham addProject():
+
+    String startDate = view.getStartDateInput();
+    String endDate = calculateEndDate(startDate, duration);
+    view.displayMessage(">> End Date (auto): " + endDate);
+
+
+==============================
+KICH BAN 7: Tim Project theo Ten
+==============================
+>> Yeu cau: Tim project theo ten (tim ganh).
+
+    private void searchProjectByName() {
+        view.displayMessage("\n--- Search Project by Name ---");
+        System.out.print("Enter project name to search: ");
+        String keyword = Validation.checkInputString();
+
+        List<Project> found = new ArrayList<>();
+        for (Project p : projects) {
+            if (p.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                found.add(p);
+            }
+        }
+
+        if (found.isEmpty()) {
+            view.displayError("No project found with name: " + keyword);
+        } else {
+            view.displayProjectList(found);
+        }
+    }
+
+
+==============================
+KICH BAN 8: Xoa Project theo ID
+==============================
+>> Yeu cau: Them chuc nang xoa project.
+
+    private void removeProject() {
+        view.displayMessage("\n--- Remove Project ---");
+        System.out.print("Enter Project ID to remove: ");
+        String id = Validation.checkInputString().toUpperCase();
+
+        Project proj = findProjectById(id);
+        if (proj == null) {
+            view.displayError("Project ID does not exist!");
+            return;
+        }
+
+        projects.remove(proj);
+        hasUnsavedChanges = true;
+        view.displayMessage("Project removed successfully!");
+    }
+
+
+==============================
+KICH BAN 9: Liet ke Project trong khoang thoi gian
+==============================
+>> Yeu cau: Nhap 2 ngay, loc cac project co startDate nam trong khoang do.
+
+    // Can import: java.text.SimpleDateFormat, java.util.Date
+
+    private void listProjectsByTimeframe() {
+        view.displayMessage("\n--- List Projects by Timeframe ---");
+        System.out.print("Enter From Date (dd/MM/yyyy): ");
+        String fromStr = Validation.checkInputDate();
+        System.out.print("Enter To Date (dd/MM/yyyy): ");
+        String toStr = Validation.checkInputDate();
+
+        try {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            df.setLenient(false);
+            Date fromDate = df.parse(fromStr);
+            Date toDate = df.parse(toStr);
+
+            List<Project> found = new ArrayList<>();
+            for (Project p : projects) {
+                Date projDate = df.parse(p.getStartDate());
+                if (!projDate.before(fromDate) && !projDate.after(toDate)) {
+                    found.add(p);
+                }
+            }
+
+            if (found.isEmpty()) {
+                view.displayMessage("No projects found in this timeframe.");
+            } else {
+                view.displayProjectList(found);
+            }
+        } catch (Exception e) {
+            view.displayError("Date parsing error!");
+        }
+    }
+
+
+==============================
+KICH BAN 10: Update thong tin Project
+==============================
+>> Yeu cau: Cho sua ten, duration cua project (Enter de bo qua).
+
+    private void updateProject() {
+        view.displayMessage("\n--- Update Project ---");
+        System.out.print("Enter Project ID: ");
+        String id = Validation.checkInputString().toUpperCase();
+        Project proj = findProjectById(id);
+
+        if (proj == null) {
+            view.displayError("Project ID does not exist!");
+            return;
+        }
+
+        System.out.println("Current: " + proj.toDisplayRow());
+
+        System.out.print("Enter new Name (press Enter to skip): ");
+        String newName = Validation.checkInputScanner();
+        if (!newName.isEmpty()) {
+            proj.setName(newName);
+        }
+
+        System.out.print("Enter new Duration (press Enter to skip): ");
+        String durStr = Validation.checkInputScanner();
+        if (!durStr.isEmpty()) {
+            int newDur = Integer.parseInt(durStr);
+            if (newDur >= 1) {
+                proj.setDurationMonths(newDur);
+            }
+        }
+
+        hasUnsavedChanges = true;
+        view.displayMessage("Project updated successfully!");
+    }
+
+
+==============================
+KICH BAN 11: Them validate Email cho Developer
+==============================
+>> Yeu cau: Them truong email vao Developer va validate.
+
+Buoc 1: Them "private String email;" vao Developer.java
+Buoc 2: Them validate trong Validation.java:
+
+    public static String checkEmail() {
+        while (true) {
+            String email = checkInputString();
+            if (email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+                return email;
+            }
+            System.err.println("Invalid email format!");
+            System.out.print("Enter again: ");
+        }
+    }
+
+Buoc 3: Cap nhat addDeveloper() de nhap email.
+Buoc 4: Cap nhat FileService (loadDevelopers + saveDevelopers) de doc/ghi email.
+
+
+==============================
+KICH BAN 12: Them validate So Dien Thoai
+==============================
+>> Yeu cau: Them truong phone va validate.
+
+Them vao Validation.java:
+
+    public static String checkPhoneNumber() {
+        while (true) {
+            String phone = checkInputString();
+            if (phone.matches("0\\d{9}")) {
+                return phone;
+            }
+            System.err.println("Phone must be 10 digits starting with 0!");
+            System.out.print("Enter again: ");
+        }
+    }
+
+
+==============================
+KICH BAN 13: In bang dep hon (Formatted Table)
+==============================
+>> Yeu cau: Hien thi bang co duong ke.
+
+Sua trong ConsoleView.java:
+
+    System.out.println("+------------+----------------------+-----------+");
+    System.out.printf("| %-10s | %-20s | %-9s |%n", "ID", "Name", "Salary");
+    System.out.println("+------------+----------------------+-----------+");
+    for (Developer dev : developers) {
+        System.out.printf("| %-10s | %-20s | %9d |%n",
+            dev.getId(), dev.getName(), dev.getSalary());
+    }
+    System.out.println("+------------+----------------------+-----------+");
+
+
+==============================
+KICH BAN 14: Xuat Report ra file .txt
+==============================
+>> Yeu cau: Xuat danh sach developer/project ra file bao cao.
+
+    // Can import: java.io.*
+
+    private void exportReport() {
+        try (BufferedWriter bw = new BufferedWriter(
+                new FileWriter("report.txt"))) {
+            bw.write("===== DEVELOPER REPORT =====\n");
+            for (Developer dev : developers) {
+                bw.write(dev.toDisplayRow() + "\n");
+            }
+            bw.write("\n===== PROJECT REPORT =====\n");
+            for (Project proj : projects) {
+                bw.write(proj.toDisplayRow() + "\n");
+            }
+            view.displayMessage("Report exported to report.txt!");
+        } catch (IOException e) {
+            view.displayError("Error exporting report: " + e.getMessage());
+        }
+    }
+
+
+==============================================================================
+LUU Y: Moi kich ban them vao, nho:
+  1. Them case trong switch cua ham run()
+  2. Cap nhat menu trong ConsoleView.displayMenu()
+  3. Dat hasUnsavedChanges = true neu thay doi du lieu
+  4. Neu them truong moi vao entity -> cap nhat FileService (load + save)
+==============================================================================
