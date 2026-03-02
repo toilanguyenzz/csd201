@@ -49,7 +49,7 @@ public class ConsoleView {
      */
     public void displayDeveloperList(List<Developer> developers) {
         System.out.println("\n--- Developer List ---");
-        System.out.printf("%-10s | %-25s | %-30s | %s%n", "ID", "Name", "Languages", "Salary (USD)");
+        System.out.printf("%-10s | %-20s | %-25s | %s%n", "ID", "Name", "Languages", "Salary (USD)");
         System.out.println("--------------------------------------------------------------------------------");
         if (developers.isEmpty()) {
             System.out.println("No developers found.");
@@ -92,14 +92,20 @@ public class ConsoleView {
         for (Map.Entry<Developer, List<Project>> entry : developerProjects.entrySet()) {
             Developer dev = entry.getKey();
             List<Project> projects = entry.getValue();
-            System.out.println("\n[" + dev.getId() + "] " + dev.getName());
+            System.out.println("\n  [" + dev.getId() + "] " + dev.getName());
+            System.out.println(
+                    "  -------------------------------------------------------------------------------------------------------");
             if (projects.isEmpty()) {
-                System.out.println("   (No projects assigned)");
+                System.out.println("  (No projects assigned)");
             } else {
-                System.out.printf("   %-10s | %-25s | %-10s | %s%n", "Proj ID", "Name", "Duration", "Start Date");
+                System.out.printf("  %-10s | %-25s | %-12s | %-12s | %-20s%n",
+                        "Proj ID", "Name", "Duration", "Start Date", "Client Name");
+                System.out.println(
+                        "  -------------------------------------------------------------------------------------------------------");
                 for (Project proj : projects) {
-                    System.out.printf("   %-10s | %-25s | %d months  | %s%n",
-                            proj.getId(), proj.getName(), proj.getDurationMonths(), proj.getStartDate());
+                    String duration = proj.getDurationMonths() + " months";
+                    System.out.printf("  %-10s | %-25s | %-12s | %-12s | %-20s%n",
+                            proj.getId(), proj.getName(), duration, proj.getStartDate(), proj.getClientName());
                 }
             }
         }
@@ -175,6 +181,11 @@ public class ConsoleView {
     public int getDurationInput() {
         System.out.print("Enter Duration (months, minimum 1): ");
         return Validation.checkDuration();
+    }
+
+    public String getClientNameInput() {
+        System.out.print("Enter Client Name: ");
+        return Validation.checkInputString();
     }
 
     public String getStartDateInput() {

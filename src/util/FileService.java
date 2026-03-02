@@ -66,7 +66,7 @@ public class FileService {
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty())
                     continue;
-                // Format: PROJ01, DEV001, E-Commerce Platform, 12, 01/01/2026
+                // Format: PROJ01, DEV001, E-Commerce Platform, 12, 01/01/2026, ClientName
                 String[] parts = line.split(", ");
                 if (parts.length >= 5) {
                     String id = parts[0].trim();
@@ -74,7 +74,8 @@ public class FileService {
                     String name = parts[2].trim();
                     int duration = Integer.parseInt(parts[3].trim());
                     String date = parts[4].trim();
-                    projects.add(new Project(id, devId, name, duration, date));
+                    String clientName = (parts.length >= 6) ? parts[5].trim() : "";
+                    projects.add(new Project(id, devId, name, duration, date, clientName));
                 }
             }
         } catch (IOException | NumberFormatException e) {
@@ -112,9 +113,9 @@ public class FileService {
     public static void saveProjects(String fileName, List<Project> projects) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             for (Project proj : projects) {
-                // PROJ01, DEV001, E-Commerce Platform, 12, 01/01/2026
-                bw.write(String.format("%s, %s, %s, %d, %s", proj.getId(), proj.getDevId(), proj.getName(),
-                        proj.getDurationMonths(), proj.getStartDate()));
+                // PROJ01, DEV001, E-Commerce Platform, 12, 01/01/2026, ClientName
+                bw.write(String.format("%s, %s, %s, %d, %s, %s", proj.getId(), proj.getDevId(), proj.getName(),
+                        proj.getDurationMonths(), proj.getStartDate(), proj.getClientName()));
                 bw.newLine();
             }
         } catch (IOException e) {

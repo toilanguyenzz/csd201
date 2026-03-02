@@ -186,8 +186,9 @@ public class ManagementController {
         String name = view.getProjectNameInput();
         int duration = view.getDurationInput();
         String startDate = view.getStartDateInput();
+        String clientName = view.getClientNameInput();
 
-        projects.add(new Project(projId, selectedDev.getId(), name, duration, startDate));
+        projects.add(new Project(projId, selectedDev.getId(), name, duration, startDate, clientName));
         hasUnsavedChanges = true;
         view.displayMessage("Project added successfully!");
     }

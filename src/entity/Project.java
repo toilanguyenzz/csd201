@@ -9,6 +9,7 @@ public class Project extends BaseEntity {
     private String name;
     private int durationMonths;
     private String startDate;
+    private String clientName;
 
     /**
      * Constructor to initialize a Project object.
@@ -18,13 +19,15 @@ public class Project extends BaseEntity {
      * @param name           The name of the project.
      * @param durationMonths The duration of the project in months.
      * @param startDate      The start date of the project (dd/MM/yyyy).
+     * @param clientName     The name of the client for this project.
      */
-    public Project(String id, String devId, String name, int durationMonths, String startDate) {
+    public Project(String id, String devId, String name, int durationMonths, String startDate, String clientName) {
         super(id);
         this.devId = devId;
         this.name = name;
         this.durationMonths = durationMonths;
         this.startDate = startDate;
+        this.clientName = clientName;
     }
 
     public String getDevId() {
@@ -59,8 +62,17 @@ public class Project extends BaseEntity {
         this.startDate = startDate;
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
     @Override
     public String toDisplayRow() {
-        return String.format("%-10s | %-10s | %-20s | %d months | %s", id, devId, name, durationMonths, startDate);
+        return String.format("%-10s | %-10s | %-20s | %d months | %-12s | %s", id, devId, name, durationMonths,
+                startDate, clientName);
     }
 }
